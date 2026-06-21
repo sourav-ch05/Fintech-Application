@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Merchant Dashboard — FintechApp</title>
+  <link rel="stylesheet" href="../assets/styles.css">
+  <style>
+    header{
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+    header .header-content{
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    header .header-title{
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    header h1{
+      margin: 0;
+      font-size: 1.3em;
+    }
+    header p{
+      margin: 0;
+    }
+    header .header-nav{
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    header .nav-btn{
+      padding: 8px 12px;
+      font-size: 0.85em;
+    }
+    .nav-btn{padding:16px;background:linear-gradient(135deg, #93009c 0%, #6b0078 100%);color:#fff;text-decoration:none;border-radius:10px;text-align:center;font-weight:600;transition:all 0.3s;border:2px solid transparent}
+    .nav-btn:hover{border-color:#b000b2;transform:scale(1.05)}
+    .nav-btn.secondary{background:linear-gradient(135deg, #380356 0%, #6b0078 100%)}
+    .nav-btn.success{background:linear-gradient(135deg, #10B981 0%, #059669 100%)}
+    .nav-btn.warning{background:linear-gradient(135deg, #b000b2 0%, #93009c 100%)}
+    .dashboard-hero{background:linear-gradient(135deg, #93009c 0%, #6b0078 50%, #380356 100%);color:#fff;padding:30px;border-radius:12px;margin-bottom:24px;text-align:center}
+    .dashboard-hero h1{color:#fff;margin:0 0 8px}
+    .dashboard-hero p{margin:0;color:rgba(255,255,255,0.9)}
+    .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-bottom:24px}
+    .stat-box{background:#1a1a1a;padding:20px;border-radius:10px;border-left:4px solid #b000b2;box-shadow:0 4px 6px rgba(0,0,0,0.07)}
+    .stat-box h4{margin:0 0 8px;color:#aaaaaa;font-size:0.9em;text-transform:uppercase}
+    .stat-box .number{font-size:2.5em;font-weight:700;color:#b000b2}
+    .merchant-card{background:linear-gradient(135deg, #93009c 0%, #6b0078 50%, #380356 100%);color:#fff;padding:24px;border-radius:12px;margin-bottom:24px;box-shadow:0 4px 6px rgba(0,0,0,0.07)}
+    .merchant-card h2{color:#fff;margin:0 0 16px}
+    .merchant-info{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px}
+    .info-item{background:rgba(255,255,255,0.15);padding:12px;border-radius:8px}
+    .info-label{color:rgba(255,255,255,0.8);font-size:0.9em;margin-bottom:4px}
+    .info-value{font-size:1.1em;font-weight:600;color:#fff;font-family:monospace;word-break:break-all}
+    .payments-section{background:#1a1a1a;padding:24px;border-radius:12px;margin-bottom:24px;box-shadow:0 4px 6px rgba(0,0,0,0.07)}
+    .payments-section h2{color:#b000b2;margin-top:0;border-bottom:2px solid #380356;padding-bottom:12px}
+    .table{width:100%;border-collapse:collapse}
+    .table th{background:linear-gradient(135deg, #93009c 0%, #6b0078 100%);color:#fff;padding:12px;text-align:left}
+    .table td{padding:12px;border-bottom:1px solid #E5E7EB}
+    .table tr:hover{background:#2a2a2a}
+    .action-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+    .action-btn{padding:12px 16px;border-radius:8px;text-decoration:none;text-align:center;font-weight:600;transition:all 0.3s;border:none;cursor:pointer}
+    .action-btn.primary{background:linear-gradient(135deg, #93009c 0%, #6b0078 100%);color:#fff}
+    .action-btn.primary:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+    .action-btn.secondary{background:linear-gradient(135deg, #380356 0%, #6b0078 100%);color:#fff}
+    .action-btn.secondary:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+    .action-btn.danger{background:linear-gradient(135deg, #EF4444 0%, #DC2626 100%);color:#fff}
+    .feature-card{background:#1a1a1a;padding:24px;border-radius:12px;box-shadow:0 4px 6px rgba(0,0,0,0.07);transition:all 0.3s}
+    .feature-card:hover{transform:translateY(-8px);box-shadow:0 20px 25px rgba(0,0,0,0.1)}
+    .feature-card h3{color:#b000b2;margin-top:0}
+    .feature-card p{color:#aaaaaa;font-size:0.95em}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="max-width:1200px;margin:0 auto;padding:8px 16px;">
+      <div class="header-content">
+        <div class="header-title">
+          <h1>FintechApp</h1>
+          <p style="margin:0;color:rgba(255,255,255,0.9);font-size:0.75em">Modern Financial Services Platform</p>
+        </div>
+        <div class="header-nav">
+          <a href="../auth/login.html" class="nav-btn">Login</a>
+          <a href="../auth/register.html" class="nav-btn">Register</a>
+          <a href="../profile/profile.html" class="nav-btn secondary">My Profile</a>
+          <a href="../kyc/kyc-upload.html" class="nav-btn secondary">KYC</a>
+          <a href="../transfers/transfer.html" class="nav-btn success">Send Money</a>
+          <a href="../transactions/transactions.html" class="nav-btn success">Transactions</a>
+          <a href="../merchant/merchant-onboarding.html" class="nav-btn warning">Merchant</a>
+          <a href="../merchant/merchant-dashboard.html" class="nav-btn warning">Dashboard</a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main style="margin-top: 40px;">
+    <div class="dashboard-hero">
+      <h1>Merchant Dashboard</h1>
+      <p>Manage your payments and business operations</p>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-box">
+        <h4>Total Earnings</h4>
+        <div class="number">₹ 45,890</div>
+      </div>
+      <div class="stat-box">
+        <h4>Transactions Today</h4>
+        <div class="number" id="txnCount">12</div>
+      </div>
+      <div class="stat-box">
+        <h4>Active Customers</h4>
+        <div class="number">328</div>
+      </div>
+      <div class="stat-box">
+        <h4>Settlement Status</h4>
+        <div class="number" style="color:#10B981">Active</div>
+      </div>
+    </div>
+
+    <div class="merchant-card">
+      <h2>Your Merchant Profile</h2>
+      <div class="merchant-info">
+        <div class="info-item">
+          <div class="info-label">Business Name</div>
+          <div class="info-value" id="merchantNameDisplay">-</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">Contact Number</div>
+          <div class="info-value" id="merchantPhoneDisplay">-</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">Your UPI ID</div>
+          <div class="info-value" id="merchantUPIDisplay">-</div>
+        </div>
+      </div>
+      <p style="margin:16px 0 0;font-size:0.95em;color:rgba(255,255,255,0.9)">Share your UPI ID with customers to receive payments instantly</p>
+    </div>
+
+    <div class="payments-section">
+      <h2>Recent Payments Received</h2>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Transaction ID</th>
+            <th>Customer</th>
+            <th>Amount</th>
+            <th>Status</th>
+            <th>Date & Time</th>
+          </tr>
+        </thead>
+        <tbody id="paymentsBody">
+          <tr><td colspan="5" style="text-align:center;padding:20px;">Loading payments...</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div>
+      <h2 style="color:#1F2937;margin-bottom:16px">Quick Actions</h2>
+      <div class="action-grid">
+        <a href="qr-generation.html" class="action-btn primary">Generate UPI QR</a>
+        <a href="merchant-onboarding.html" class="action-btn secondary">Add New Merchant</a>
+        <a href="../transfers/transfer.html" class="action-btn secondary">Send Payment</a>
+        <a href="../profile/profile.html" class="action-btn secondary">My Profile</a>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <small>Secure merchant operations | <a href="#" style="color:#b000b2;text-decoration:none">Privacy</a> | <a href="#" style="color:#b000b2;text-decoration:none">Terms</a></small>
+  </footer>
+
+  <script>
+    const paymentsBody = document.getElementById('paymentsBody');
+    const merchantNameDisplay = document.getElementById('merchantNameDisplay');
+    const merchantPhoneDisplay = document.getElementById('merchantPhoneDisplay');
+    const merchantUPIDisplay = document.getElementById('merchantUPIDisplay');
+
+    // Load merchant info from localStorage
+    function loadMerchantInfo() {
+      const merchantName = localStorage.getItem('merchantName') || 'Not set';
+      const merchantPhone = localStorage.getItem('merchantPhone') || '-';
+      const merchantUPI = localStorage.getItem('merchantUPI') || 'Not set';
+      
+      merchantNameDisplay.textContent = merchantName;
+      merchantPhoneDisplay.textContent = merchantPhone;
+      merchantUPIDisplay.textContent = merchantUPI;
+    }
+
+    // Load merchant payments
+    async function loadPayments() {
+      try {
+        const merchantId = localStorage.getItem('merchantId') || 'merchant_' + Date.now();
+        const response = await fetch(`/api/merchant/${merchantId}/payments`);
+        const data = await response.json();
+        if (data.ok && data.payments.length > 0) {
+          paymentsBody.innerHTML = data.payments.map(p => `
+            <tr>
+              <td>${p.id}</td>
+              <td>${p.from || '-'}</td>
+              <td>₹${parseFloat(p.amount).toFixed(2)}</td>
+              <td class="${p.status}">${p.status.toUpperCase()}</td>
+              <td>${new Date(p.date).toLocaleDateString()}</td>
+            </tr>
+          `).join('');
+        } else {
+          paymentsBody.innerHTML = '<tr><td colspan="5">No payments received yet</td></tr>';
+        }
+      } catch (err) {
+        paymentsBody.innerHTML = '<tr><td colspan="5">Error loading payments</td></tr>';
+      }
+    }
+
+    loadMerchantInfo();
+    loadPayments();
+  </script>
+  <script src="../assets/appbar-auth.js"></script>
+</body>
+</html>

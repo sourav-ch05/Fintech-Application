@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Merchant Onboarding — FintechApp</title>
+  <link rel="stylesheet" href="../assets/styles.css">
+  <style>
+    header{
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+    header .header-content{
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    header .header-title{
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    header h1{
+      margin: 0;
+      font-size: 1.3em;
+    }
+    header p{
+      margin: 0;
+    }
+    header .header-nav{
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    header .nav-btn{
+      padding: 8px 12px;
+      font-size: 0.85em;
+    }
+    .nav-btn{padding:16px;background:linear-gradient(135deg, #93009c 0%, #6b0078 100%);color:#fff;text-decoration:none;border-radius:10px;text-align:center;font-weight:600;transition:all 0.3s;border:2px solid transparent}
+    .nav-btn:hover{border-color:#b000b2;transform:scale(1.05)}
+    .nav-btn.secondary{background:linear-gradient(135deg, #380356 0%, #6b0078 100%)}
+    .nav-btn.success{background:linear-gradient(135deg, #10B981 0%, #059669 100%)}
+    .nav-btn.warning{background:linear-gradient(135deg, #b000b2 0%, #93009c 100%)}
+    .upi-display { background: #2a2a2a; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #b000b2; }
+    .upi-display strong { color: #b000b2; font-size: 1.1em; }
+    label{color:#ffffff !important;display:block !important;margin:12px 0 6px !important;font-weight:500 !important}
+    input[type="text"], input[type="tel"], input[type="file"]{background:#2a2a2a !important;border:2px solid #380356 !important;color:#ffffff !important;padding:12px !important;border-radius:8px !important;font-size:0.95em !important;width:100% !important}
+    input::placeholder{color:#888888 !important}
+    input:focus{outline:none !important;border-color:#b000b2 !important;box-shadow:0 0 0 3px rgba(176, 0, 178, 0.1) !important}
+    .feature-card{background:#1a1a1a;padding:24px;border-radius:12px;box-shadow:0 4px 6px rgba(0,0,0,0.07);transition:all 0.3s}
+    .feature-card:hover{transform:translateY(-8px);box-shadow:0 20px 25px rgba(0,0,0,0.1)}
+    .feature-card h3{color:#b000b2;margin-top:0}
+    .feature-card p{color:#aaaaaa;font-size:0.95em}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="max-width:1200px;margin:0 auto;padding:8px 16px;">
+      <div class="header-content">
+        <div class="header-title">
+          <h1>FintechApp</h1>
+          <p style="margin:0;color:rgba(255,255,255,0.9);font-size:0.75em">Modern Financial Services Platform</p>
+        </div>
+        <div class="header-nav">
+          <a href="../auth/login.html" class="nav-btn">Login</a>
+          <a href="../auth/register.html" class="nav-btn">Register</a>
+          <a href="../profile/profile.html" class="nav-btn secondary">My Profile</a>
+          <a href="../kyc/kyc-upload.html" class="nav-btn secondary">KYC</a>
+          <a href="../transfers/transfer.html" class="nav-btn success">Send Money</a>
+          <a href="../transactions/transactions.html" class="nav-btn success">Transactions</a>
+          <a href="../merchant/merchant-onboarding.html" class="nav-btn warning">Merchant</a>
+          <a href="../merchant/merchant-dashboard.html" class="nav-btn warning">Dashboard</a>
+        </div>
+      </div>
+    </div>
+  </header>
+  <main class="card" style="margin-top: 40px;">
+    <h2>Merchant Onboarding</h2>
+    <div id="message"></div>
+    
+    <form id="onboardingForm">
+      <label>Business name
+        <input type="text" id="businessName" name="business_name" placeholder="e.g., ABC Shop" required>
+      </label>
+      <label>Contact person
+        <input type="text" name="contact" required>
+      </label>
+      <label>Phone
+        <input type="tel" name="phone" required>
+      </label>
+      <label>Business documents
+        <input type="file" name="business_doc" accept="image/*,application/pdf">
+      </label>
+      
+      <div class="upi-display" id="upiDisplay" style="display:none;">
+        <p>Generated UPI ID:</p>
+        <strong id="upiIdDisplay"></strong>
+      </div>
+      
+      <button type="submit">Submit onboarding</button>
+    </form>
+
+    <p style="margin-top: 20px;"><a href="merchant-dashboard.html">View Dashboard</a> | <a href="../index.html">Back</a></p>
+  </main>
+
+  <script>
+    const form = document.getElementById('onboardingForm');
+    const messageDiv = document.getElementById('message');
+    const businessNameInput = document.getElementById('businessName');
+    const upiDisplay = document.getElementById('upiDisplay');
+    const upiIdDisplay = document.getElementById('upiIdDisplay');
+
+    // Generate UPI ID from business name
+    function generateUPIID(businessName) {
+      return businessName
+        .toLowerCase()
+        .trim()
+        .replace(/\s+/g, '')
+        .replace(/[^a-z0-9]/g, '')
+        .substring(0, 20) + '@fintech';
+    }
+
+    // Show UPI ID as user types
+    businessNameInput.addEventListener('input', (e) => {
+      if (e.target.value.trim()) {
+        const upiId = generateUPIID(e.target.value);
+        upiIdDisplay.textContent = upiId;
+        upiDisplay.style.display = 'block';
+      } else {
+        upiDisplay.style.display = 'none';
+      }
+    });
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      messageDiv.textContent = 'Submitting onboarding...';
+      messageDiv.style.color = 'blue';
+
+      const formData = new FormData(form);
+      const businessName = businessNameInput.value;
+      const upiId = generateUPIID(businessName);
+      
+      try {
+        const response = await fetch('/api/merchant/onboard', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            business_name: businessName,
+            contact: formData.get('contact'),
+            phone: formData.get('phone'),
+            upi_id: upiId
+          })
+        });
+        const data = await response.json();
+        if (response.ok) {
+          messageDiv.textContent = '✓ Merchant onboarded successfully!';
+          messageDiv.style.color = 'green';
+          
+          // Save merchant info
+          localStorage.setItem('merchantId', data.merchant.id);
+          localStorage.setItem('merchantName', businessName);
+          localStorage.setItem('merchantUPI', upiId);
+          localStorage.setItem('merchantPhone', formData.get('phone'));
+          
+          form.reset();
+          upiDisplay.style.display = 'none';
+          setTimeout(() => window.location.href = 'merchant-dashboard.html', 1500);
+        } else {
+          messageDiv.textContent = '✗ ' + (data.error || 'Onboarding failed');
+          messageDiv.style.color = 'red';
+        }
+      } catch (err) {
+        messageDiv.textContent = '✗ Error: ' + err.message;
+        messageDiv.style.color = 'red';
+      }
+    });
+  </script>
+  <script src="../assets/appbar-auth.js"></script>
+</body>
+</html>

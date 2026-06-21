@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Transaction Receipt — FintechApp</title>
+  <link rel="stylesheet" href="../assets/styles.css">
+  <style>
+    header{
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+    header .header-content{
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    header .header-title{
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    header h1{
+      margin: 0;
+      font-size: 1.3em;
+    }
+    header p{
+      margin: 0;
+    }
+    header .header-nav{
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    header .nav-btn{
+      padding: 8px 12px;
+      font-size: 0.85em;
+    }
+    .nav-btn{padding:16px;background:linear-gradient(135deg, #93009c 0%, #6b0078 100%);color:#fff;text-decoration:none;border-radius:10px;text-align:center;font-weight:600;transition:all 0.3s;border:2px solid transparent}
+    .nav-btn:hover{border-color:#b000b2;transform:scale(1.05)}
+    .nav-btn.secondary{background:linear-gradient(135deg, #380356 0%, #6b0078 100%)}
+    .nav-btn.success{background:linear-gradient(135deg, #10B981 0%, #059669 100%)}
+    .nav-btn.warning{background:linear-gradient(135deg, #b000b2 0%, #93009c 100%)}
+    .receipt { border: 1px solid #380356; padding: 20px; border-radius: 8px; margin: 20px 0; background: #1a1a1a; box-shadow:0 4px 6px rgba(0,0,0,0.07); }
+    .receipt p { margin: 8px 0; color:#aaaaaa; }
+    .receipt strong { display: inline-block; width: 120px; color:#b000b2; }
+    .success { color: #10B981; font-weight: bold; }
+    .pending { color: #D97706; font-weight: bold; }
+    .failed { color: #EF4444; font-weight: bold; }
+    .feature-card{background:#1a1a1a;padding:24px;border-radius:12px;box-shadow:0 4px 6px rgba(0,0,0,0.07);transition:all 0.3s}
+    .feature-card:hover{transform:translateY(-8px);box-shadow:0 20px 25px rgba(0,0,0,0.1)}
+    .feature-card h3{color:#b000b2;margin-top:0}
+    .feature-card p{color:#aaaaaa;font-size:0.95em}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="max-width:1200px;margin:0 auto;padding:8px 16px;">
+      <div class="header-content">
+        <div class="header-title">
+          <h1>FintechApp</h1>
+          <p style="margin:0;color:rgba(255,255,255,0.9);font-size:0.75em">Modern Financial Services Platform</p>
+        </div>
+        <div class="header-nav">
+          <a href="../auth/login.html" class="nav-btn">Login</a>
+          <a href="../auth/register.html" class="nav-btn">Register</a>
+          <a href="../profile/profile.html" class="nav-btn secondary">My Profile</a>
+          <a href="../kyc/kyc-upload.html" class="nav-btn secondary">KYC</a>
+          <a href="../transfers/transfer.html" class="nav-btn success">Send Money</a>
+          <a href="../transactions/transactions.html" class="nav-btn success">Transactions</a>
+          <a href="../merchant/merchant-onboarding.html" class="nav-btn warning">Merchant</a>
+          <a href="../merchant/merchant-dashboard.html" class="nav-btn warning">Dashboard</a>
+        </div>
+      </div>
+    </div>
+  </header>
+  <main class="card" style="margin-top: 40px;">
+    <h2>Transaction Receipt</h2>
+    <div id="message" style="color: blue;"></div>
+    
+    <section class="receipt" id="receiptContent">
+      <p>Loading receipt...</p>
+    </section>
+    
+    <div style="text-align: center;">
+      <button onclick="window.print()" style="padding: 10px 20px; background: #93009c; color: white; border: none; border-radius: 4px; cursor: pointer;">Print Receipt</button>
+    </div>
+    
+    <p style="margin-top: 20px;"><a href="transactions.html">Back to Transactions</a> | <a href="../index.html">Home</a></p>
+  </main>
+
+  <script>
+    const receiptContent = document.getElementById('receiptContent');
+    const messageDiv = document.getElementById('message');
+
+    async function loadReceipt() {
+      try {
+        // Get transaction ID from URL parameter or localStorage
+        const params = new URLSearchParams(window.location.search);
+        const txnId = params.get('id') || localStorage.getItem('lastTxnId') || 'T1001';
+        
+        messageDiv.textContent = 'Loading receipt...';
+        const response = await fetch(`/api/transactions/${txnId}`);
+        const data = await response.json();
+        
+        if (data.ok && data.transaction) {
+          const t = data.transaction;
+          receiptContent.innerHTML = `
+            <p><strong>Txn ID:</strong> ${t.id}</p>
+            <p><strong>From:</strong> ${t.from || '-'}</p>
+            <p><strong>To:</strong> ${t.to || '-'}</p>
+            <p><strong>Amount:</strong> ₹${parseFloat(t.amount).toFixed(2)}</p>
+            <p><strong>Status:</strong> <span class="${t.status}">${t.status.toUpperCase()}</span></p>
+            <p><strong>Date:</strong> ${new Date(t.date).toLocaleString()}</p>
+            <p><strong>Method:</strong> ${t.method || 'Wallet'}</p>
+          `;
+          messageDiv.textContent = '';
+        } else {
+          receiptContent.innerHTML = '<p>Receipt not found</p>';
+        }
+      } catch (err) {
+        receiptContent.innerHTML = `<p>Error loading receipt: ${err.message}</p>`;
+      }
+    }
+
+    loadReceipt();
+  </script>
+  <script src="../assets/appbar-auth.js"></script>
+</body>
+</html>

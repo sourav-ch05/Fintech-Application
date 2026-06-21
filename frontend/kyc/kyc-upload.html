@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>KYC Upload — FintechApp</title>
+  <link rel="stylesheet" href="../assets/styles.css">
+  <style>
+    header{
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+    header .header-content{
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    header .header-title{
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    header h1{
+      margin: 0;
+      font-size: 1.3em;
+    }
+    header p{
+      margin: 0;
+    }
+    header .header-nav{
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    header .nav-btn{
+      padding: 8px 12px;
+      font-size: 0.85em;
+    }
+    .nav-btn{padding:16px;background:linear-gradient(135deg, #93009c 0%, #6b0078 100%);color:#fff;text-decoration:none;border-radius:10px;text-align:center;font-weight:600;transition:all 0.3s;border:2px solid transparent}
+    .nav-btn:hover{border-color:#b000b2;transform:scale(1.05)}
+    .nav-btn.secondary{background:linear-gradient(135deg, #380356 0%, #6b0078 100%)}
+    .nav-btn.success{background:linear-gradient(135deg, #10B981 0%, #059669 100%)}
+    .nav-btn.warning{background:linear-gradient(135deg, #b000b2 0%, #93009c 100%)}
+    .status-badge { padding: 8px 12px; border-radius: 4px; font-weight: bold; margin-top: 10px; }
+    .status-pending { background: #fff3cd; color: #856404; }
+    .status-verified { background: #d4edda; color: #155724; }
+    .status-rejected { background: #f8d7da; color: #721c24; }
+    label{color:#ffffff !important;display:block !important;margin:12px 0 6px !important;font-weight:500 !important}
+    input[type="text"], input[type="file"]{background:#2a2a2a !important;border:2px solid #380356 !important;color:#ffffff !important;padding:12px !important;border-radius:8px !important;font-size:0.95em !important;width:100% !important}
+    input[type="text"]::placeholder{color:#888888 !important}
+    input[type="text"]:focus, input[type="file"]:focus{outline:none !important;border-color:#b000b2 !important;box-shadow:0 0 0 3px rgba(176, 0, 178, 0.1) !important}
+    .feature-card{background:#1a1a1a;padding:24px;border-radius:12px;box-shadow:0 4px 6px rgba(0,0,0,0.07);transition:all 0.3s}
+    .feature-card:hover{transform:translateY(-8px);box-shadow:0 20px 25px rgba(0,0,0,0.1)}
+    .feature-card h3{color:#b000b2;margin-top:0}
+    .feature-card p{color:#aaaaaa;font-size:0.95em}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="max-width:1200px;margin:0 auto;padding:8px 16px;">
+      <div class="header-content">
+        <div class="header-title">
+          <h1>FintechApp</h1>
+          <p style="margin:0;color:rgba(255,255,255,0.9);font-size:0.75em">Modern Financial Services Platform</p>
+        </div>
+        <div class="header-nav">
+          <a href="../auth/login.html" class="nav-btn">Login</a>
+          <a href="../auth/register.html" class="nav-btn">Register</a>
+          <a href="../profile/profile.html" class="nav-btn secondary">My Profile</a>
+          <a href="../kyc/kyc-upload.html" class="nav-btn secondary">KYC</a>
+          <a href="../transfers/transfer.html" class="nav-btn success">Send Money</a>
+          <a href="../transactions/transactions.html" class="nav-btn success">Transactions</a>
+          <a href="../merchant/merchant-onboarding.html" class="nav-btn warning">Merchant</a>
+          <a href="../merchant/merchant-dashboard.html" class="nav-btn warning">Dashboard</a>
+        </div>
+      </div>
+    </div>
+  </header>
+  <main class="card" style="margin-top: 40px;">
+    <h2>KYC Verification</h2>
+    <div id="message"></div>
+    
+    <form id="kycForm" enctype="multipart/form-data">
+      <label>Email ID
+        <input type="text" name="userId" id="userId" placeholder="your@email.com" required>
+      </label>
+      <label>Aadhaar number
+        <input type="text" name="aadhaar" placeholder="12-digit aadhaar">
+      </label>
+      <label>Aadhaar document (front/back)
+        <input type="file" name="aadhaar_doc" accept="image/*,application/pdf">
+      </label>
+      <label>PAN number
+        <input type="text" name="pan" placeholder="PAN number">
+      </label>
+      <label>PAN card image
+        <input type="file" name="pan_doc" accept="image/*,application/pdf">
+      </label>
+      <label>Other ID
+        <input type="file" name="other_id" accept="image/*,application/pdf">
+      </label>
+      <button type="submit">Upload for verification</button>
+    </form>
+
+    <section>
+      <h4>Your KYC Status</h4>
+      <div id="statusDiv">Loading status...</div>
+    </section>
+
+    <p style="margin-top: 20px;"><a href="../profile/profile.html">Back to Profile</a></p>
+  </main>
+
+  <script>
+    const form = document.getElementById('kycForm');
+    const messageDiv = document.getElementById('message');
+    const statusDiv = document.getElementById('statusDiv');
+    const userIdInput = document.getElementById('userId');
+
+    // Load email ID from localStorage
+    function loadUserId() {
+      const userId = localStorage.getItem('email') || localStorage.getItem('userId') || '';
+      userIdInput.value = userId;
+    }
+
+    // Load KYC status
+    async function loadKYCStatus() {
+      try {
+        const userId = localStorage.getItem('email') || localStorage.getItem('userId') || '';
+        if (!userId) {
+          statusDiv.innerHTML = '<p>Please login to view KYC status</p>';
+          return;
+        }
+        const response = await fetch(`/api/kyc/${userId}/status`);
+        const data = await response.json();
+        
+        if (data.status && data.status !== 'not_submitted') {
+          const statusClass = `status-${data.status}`;
+          statusDiv.innerHTML = `
+            <div class="${statusClass}">
+              Status: ${data.status.toUpperCase()}
+            </div>
+            <p>Last updated: ${new Date(data.record?.createdAt).toLocaleDateString()}</p>
+          `;
+        } else {
+          statusDiv.innerHTML = '<p>No KYC submitted yet</p>';
+        }
+      } catch (err) {
+        statusDiv.innerHTML = '<p>Could not load KYC status</p>';
+      }
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      messageDiv.textContent = 'Uploading KYC documents...';
+      messageDiv.style.color = 'blue';
+
+      const formData = new FormData(form);
+      try {
+        const response = await fetch('/api/kyc/upload', {
+          method: 'POST',
+          body: formData
+        });
+        const data = await response.json();
+        if (response.ok) {
+          messageDiv.textContent = 'KYC uploaded successfully! Status: ' + data.record.status;
+          messageDiv.style.color = 'green';
+          form.reset();
+          loadUserId();
+          loadKYCStatus();
+        } else {
+          messageDiv.textContent = ' ' + (data.error || 'Upload failed');
+          messageDiv.style.color = 'red';
+        }
+      } catch (err) {
+        messageDiv.textContent = ' Error: ' + err.message;
+        messageDiv.style.color = 'red';
+      }
+    });
+
+    loadUserId();
+    loadKYCStatus();
+  </script>
+  <script src="../assets/appbar-auth.js"></script>
+</body>
+</html>

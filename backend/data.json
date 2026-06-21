@@ -1,0 +1,43 @@
+{
+  "users": [],
+  "kyc": [
+    {
+      "id": "k_1772016482226",
+      "userId": "soumalya5904@gmail.com",
+      "aadhaar": "123412341234",
+      "pan": "HRXPO5432P",
+      "files": {},
+      "status": "pending",
+      "createdAt": 1772016482226
+    }
+  ],
+  "merchants": [],
+  "transactions": [
+    {
+      "id": "tx_1772016508987",
+      "from": "soumalya5904@gmail.com",
+      "to": "9883468237@upi",
+      "amount": 100,
+      "status": "success",
+      "date": 1772016508987
+    },
+    {
+      "id": "tx_1772016825779",
+      "from": "soumalya5904@gmail.com",
+      "to": "demo@upi",
+      "amount": 100,
+      "status": "success",
+      "date": 1772016825779
+    }
+  ],
+  "wallets": [
+    {
+      "id": "w_1772016509003",
+      "userId": "soumalya5904@gmail.com",
+      "balance": 49900,
+      "currency": "INR",
+      "createdAt": 1772016509003,
+      "updatedAt": 1772016825779
+    }
+  ]
+}
